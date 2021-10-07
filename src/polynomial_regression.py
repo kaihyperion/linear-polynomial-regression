@@ -54,7 +54,7 @@ class PolynomialRegression():
             degree (int): Degree of polynomial used to fit the data.
         """
         self.degree = degree
-        raise NotImplementedError()
+        self.weights = None
     
     def fit(self, features, targets):
         """
@@ -70,7 +70,16 @@ class PolynomialRegression():
         Returns:
             None (saves model and training data internally)
         """
-        raise NotImplementedError()
+        X = np.ones((features.shape[0], self.degree+1))
+        for input in range(features.shape[0]):
+            for degree in range(self.degree):
+                X[input, degree + 1] = (features[input] ** (degree + 1))
+        XT = np.transpose(X)
+        feat_tar = np.dot(XT, targets)
+        XT_X = np.dot(XT, X)
+        dot_inv = inv(XT_X)
+        weights = np.dot(dot_inv, feat_tar)
+        self.weights = weights
 
     def predict(self, features):
         """
@@ -82,20 +91,11 @@ class PolynomialRegression():
         Returns:
             predictions (np.ndarray): Output of saved model on features.
         """
-        raise NotImplementedError()
+        predictions = np.zeros(features.shape[0])
+        for x_i in range(features.shape[0]):
+            predictions[x_i] += self.weights[0]
+            for d in range(self.degree):
+                predictions[x_i] += (self.weights[d + 1] * (features[x_i] ** (d + 1)))
 
-    def visualize(self, features, targets):
-        """
-        This function should produce a single plot containing a scatter plot of the
-        features and the targets, and the polynomial fit by the model should be
-        graphed on top of the points.
+        return predictions
 
-        DO NOT USE plt.show() IN THIS FUNCTION. Instead, use plt.savefig().
-
-        Args:
-            features (np.ndarray): 1D array containing real-valued inputs.
-            targets (np.ndarray): 1D array containing real-valued targets.
-        Returns:
-            None (plots to the active figure)
-        """
-        raise NotImplementedError()
